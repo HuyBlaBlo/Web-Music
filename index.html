@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trạm Nhạc Của Bé Ba</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="player-container">
+      <div class="header">
+        <h2>Trạm Nhạc Của Bé Ba 🎧</h2>
+        <p class="subtitle">Không gian âm nhạc riêng tư</p>
+      </div>
+
+      <div class="record-wrapper">
+        <div class="record" id="record-disk">🎵</div>
+      </div>
+
+      <h3 id="song-title" class="marquee">Hãy chọn một bài hát...</h3>
+
+      <audio id="audio-player" controls></audio>
+
+      <div class="playlist-container">
+        <ul class="playlist" id="playlist"></ul>
+      </div>
+      <div class="controls-top">
+        <label for="file-upload" class="upload-btn">➕ Thêm Nhạc</label>
+        <input
+          type="file"
+          id="file-upload"
+          multiple
+          accept="audio/*"
+          style="display: none"
+        />
+
+        <button id="shuffle-btn" class="shuffle-btn">🔀 Tắt ngẫu nhiên</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
