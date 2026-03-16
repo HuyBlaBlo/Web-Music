@@ -1,19 +1,45 @@
-// Danh sách nhạc có sẵn (nếu muốn để sẵn vài bài)
-const songs = [{ title: "Bài hát mẫu 1", file: "music/bai1.mp3" },
-               {title: "Cho em", file: "https://drive.google.com/uc?export=download&id="}
-              
-              ];
+// Link API quét nhạc tự động từ Drive của bạn
+const apiURL = "https://script.google.com/macros/s/AKfycbyRK79OL0Mzf1ixPgZuc_FrV45GrpRr1VgrBH60RvBJBTdruQTsvGMlb2Np1VRcqPRt/exec";
+
+// Chuyển thành 'let' và để mảng rỗng để hứng dữ liệu từ Drive về
+let songs = []; 
 
 const audioPlayer = document.getElementById("audio-player");
 const playlistElement = document.getElementById("playlist");
 const songTitleElement = document.getElementById("song-title");
 const recordDisk = document.getElementById("record-disk");
-const fileUpload = document.getElementById("file-upload"); // Bắt sự kiện nút tải lên
-let currentSongIndex = 0;
+const fileUpload = document.getElementById("file-upload"); 
+const shuffleBtn = document.getElementById("shuffle-btn");
 
-// Hàm tải danh sách hiện tại ra màn hình
+let currentSongIndex = 0;
+let isShuffle = false; 
+
+// ==========================================
+// 1. KẾT NỐI API LẤY NHẠC TỪ GOOGLE DRIVE
+// ==========================================
+async function fetchSongsFromDrive() {
+  songTitleElement.textContent = "⏳ Đang đồng bộ nhạc từ Cloud...";
+  try {
+    const response = await fetch(apiURL);
+    songs = await response.json(); // Lấy xong dữ liệu từ Drive
+    
+    if (songs.length > 0) {
+      loadPlaylist();
+      songTitleElement.textContent = "🎧 Hãy chọn một bài hát...";
+    } else {
+      songTitleElement.textContent = "Thư mục Drive đang trống!";
+    }
+  } catch (error) {
+    songTitleElement.textContent = "❌ Lỗi kết nối đến Drive!";
+    console.error("Lỗi:", error);
+  }
+}
+
+// ==========================================
+// 2. HIỂN THỊ DANH SÁCH VÀ PHÁT NHẠC
+// ==========================================
 function loadPlaylist() {
-  playlistElement.innerHTML = ""; // Xóa danh sách cũ đi để vẽ lại
+  playlistElement.innerHTML = ""; 
   songs.forEach((song, index) => {
     let li = document.createElement("li");
     li.textContent = "🎧 " + song.title;
@@ -36,57 +62,30 @@ function playSong(index) {
 }
 
 // ==========================================
-// TÍNH NĂNG MỚI: XỬ LÝ KHI BẤM "THÊM NHẠC"
+// 3. TÍNH NĂNG TẢI NHẠC TỪ MÁY (DỰ PHÒNG)
 // ==========================================
 fileUpload.addEventListener("change", function (event) {
   const files = event.target.files;
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-
-    // Tạo một đường dẫn ảo (URL) cho file nhạc vừa chọn
     const objectURL = URL.createObjectURL(file);
-
-    // Cắt bỏ chữ ".mp3" ở cuối tên file cho đẹp
     const cleanTitle = file.name.replace(/\.[^/.]+$/, "");
 
-    // Nhét vào danh sách phát
     songs.push({
       title: cleanTitle,
       file: objectURL,
     });
   }
-
-  // Cập nhật lại giao diện danh sách
   loadPlaylist();
-
-  // Reset lại ô input để lần sau chọn lại file đó vẫn nhận
   fileUpload.value = "";
 });
 
-// Các hiệu ứng đĩa quay và tự động chuyển bài
-audioPlayer.addEventListener("play", () => {
-  recordDisk.style.animationPlayState = "running";
-});
-audioPlayer.addEventListener("pause", () => {
-  recordDisk.style.animationPlayState = "paused";
-});
-audioPlayer.addEventListener("ended", () => {
-  currentSongIndex++;
-  if (currentSongIndex >= songs.length) {
-    currentSongIndex = 0;
-  }
-  playSong(currentSongIndex);
-});
-
-// Chạy lần đầu
-loadPlaylist();
-const shuffleBtn = document.getElementById("shuffle-btn");
-let isShuffle = false; // Mặc định là phát theo thứ tự
-
-// Lắng nghe sự kiện bật/tắt nút Ngẫu nhiên
+// ==========================================
+// 4. TÍNH NĂNG SHUFFLE (NGẪU NHIÊN)
+// ==========================================
 shuffleBtn.addEventListener("click", () => {
-  isShuffle = !isShuffle; // Đảo ngược trạng thái
+  isShuffle = !isShuffle; 
   if (isShuffle) {
     shuffleBtn.classList.add("active");
     shuffleBtn.textContent = "🔀 Bật ngẫu nhiên";
@@ -96,13 +95,21 @@ shuffleBtn.addEventListener("click", () => {
   }
 });
 
-// Sửa lại đoạn tự động chuyển bài khi bài hát kết thúc
+// ==========================================
+// 5. HIỆU ỨNG VÀ TỰ ĐỘNG CHUYỂN BÀI
+// ==========================================
+audioPlayer.addEventListener("play", () => {
+  recordDisk.style.animationPlayState = "running";
+});
+audioPlayer.addEventListener("pause", () => {
+  recordDisk.style.animationPlayState = "paused";
+});
+
+// Đã gộp logic chuyển bài theo thứ tự và ngẫu nhiên vào 1 sự kiện duy nhất
 audioPlayer.addEventListener("ended", () => {
   if (isShuffle) {
-    // Lấy một con số ngẫu nhiên từ 0 đến tổng số bài hát
     currentSongIndex = Math.floor(Math.random() * songs.length);
   } else {
-    // Phát theo thứ tự bình thường
     currentSongIndex++;
     if (currentSongIndex >= songs.length) {
       currentSongIndex = 0;
@@ -110,3 +117,8 @@ audioPlayer.addEventListener("ended", () => {
   }
   playSong(currentSongIndex);
 });
+
+// ==========================================
+// KÍCH HOẠT HỆ THỐNG KHI MỞ WEB
+// ==========================================
+fetchSongsFromDrive();
