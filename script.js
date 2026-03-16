@@ -1,5 +1,8 @@
 // Danh sách nhạc có sẵn (nếu muốn để sẵn vài bài)
-const songs = [{ title: "Bài hát mẫu 1", file: "music/bai1.mp3" }];
+const songs = [{ title: "Bài hát mẫu 1", file: "music/bai1.mp3" },
+               {title: "Cho em", file: "https://drive.google.com/uc?export=download&id="}
+              
+              ];
 
 const audioPlayer = document.getElementById("audio-player");
 const playlistElement = document.getElementById("playlist");
