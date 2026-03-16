@@ -1,5 +1,5 @@
 // Link API quét nhạc tự động từ Drive của bạn
-const apiURL = "https://script.google.com/macros/s/AKfycbz-yx1J4biGdBrFZc4fG2hcacsl6_tI_bX8sPteka_r5QIciXEexZo2twYQCO83LklMQw/exec";
+const apiURL = "https://script.google.com/macros/s/AKfycbw1ZBYw52jdK8lwK4MPGTR3xzvQnfd-lz-wiynX6LsY5bmt8XyEbCPrXSSDVrghZjU76g/exec";
 
 // Chuyển thành 'let' và để mảng rỗng để hứng dữ liệu từ Drive về
 let songs = []; 
